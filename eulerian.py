@@ -13,7 +13,7 @@ numBeacons = param.N_BEACON
 usedBeacons = param.N_USED_BEACON
 invalidRoutes = param.arr_allowed_routes
 
-#%% Create a matrix with as many 1s as beacons --> The connection matrix
+## Create a matrix with as many 1s as beacons --> The connection matrix
 def getConnectionMatrix():
     connectionMatrix = np.zeros(numBeacons**2, dtype=int)
     connectionMatrix[:usedBeacons] = 1
@@ -22,7 +22,7 @@ def getConnectionMatrix():
 
     return connectionMatrix
 
-#%% Check whether the matrix contains invalid routes, and correct
+## Check whether the matrix contains invalid routes, and correct
 def removeInvalidRoutes(connectionMatrix):
     # The multiplication will give us 1s for invalid routes we are using
     mult = np.multiply(invalidRoutes, connectionMatrix)
@@ -53,7 +53,7 @@ def removeInvalidRoutes(connectionMatrix):
 
     return connectionMatrix
 
-#%% Check whether the matrix contains invalid routes HAU ZEEEEEE
+## Check whether the matrix contains invalid routes
 def containsInvalidRoute(connectionMatrix):
     mult = np.multiply(param.arr_allowed_routes, connectionMatrix)
     
@@ -63,7 +63,7 @@ def containsInvalidRoute(connectionMatrix):
         print np.count_nonzero(mult)
         return True
 
-#%% List of connections
+## List of connections
 def getConnectionList(connectionMatrix):
     connections = []
     for col in range(0, numBeacons):
@@ -78,7 +78,7 @@ def getConnectionList(connectionMatrix):
                 
     return connections
 
-#%% Doubly connected graph condition
+## Doubly connected graph condition
 def isBiconnected(connectionList):
     beaconList = list(itertools.chain(*connectionList))
     beaconOccurrence = Counter(beaconList)
@@ -88,7 +88,7 @@ def isBiconnected(connectionList):
     else:
         return False
     
-#%% Find beacons with odd occurrences
+## Find beacons with odd occurrences
 def oddOccurrences(connectionList):
     beaconList = list(itertools.chain(*connectionList))
     
@@ -107,7 +107,7 @@ def oddOccurrences(connectionList):
             
     return oddBeacons
     
-#%% Force Eulerian circuit condition, i.e., no vertices (beacons) with odd occurrences 
+## Force Eulerian circuit condition, i.e., no vertices (beacons) with odd occurrences 
 def toEulerian(connectionList):
     oddBeacons = oddOccurrences(connectionList)
     numIter = 1
@@ -137,7 +137,7 @@ def toEulerian(connectionList):
             After some iterations we will just discard that tuple that will change
             the size of the connectionList so it will be discarded later in the code (2)"""
             isDuplicated = modifiedTup in connectionList
-            isSelfConnected = modifiedTup[0] == modifiedTup[1]              ##ERREPIKATUA!!!
+            isSelfConnected = modifiedTup[0] == modifiedTup[1]              
             isInvalid = invalidRoutes[modifiedTup[0]][modifiedTup[1]] == 1
             
             if isDuplicated or isSelfConnected or isInvalid:
@@ -154,7 +154,7 @@ def toEulerian(connectionList):
                 
     return connectionList
 
-#%% Create path from connections
+## Create path from connections
 def createPath(validConnections):
     path = []
     path.append(validConnections[0])
@@ -179,7 +179,7 @@ def createPath(validConnections):
      
     return path
 
-#%% Create connections from path
+## Create connections from path
 def createConnections(path):
     connections = []
     
@@ -188,7 +188,7 @@ def createConnections(path):
     
     return connections 
 
-#%% Create Eulerian circuit path
+## Create Eulerian circuit path
 def getEulerianCircuit():
     cMatrixAttempts = 1
     eulerianAttempts = 1
@@ -204,7 +204,7 @@ def getEulerianCircuit():
         connectionList = getConnectionList(connectionMatrix)
         
         while True: # Try different matrices until we get a valid one
-            notSelfConnected = all(x == 0 for x in connectionMatrix.diagonal()) ###ERREPIKATUA!!
+            notSelfConnected = all(x == 0 for x in connectionMatrix.diagonal()) 
             notDuplicated = len(list(set(connectionList))) == usedBeacons
             if notSelfConnected and notDuplicated: # This is a valid matrix
                 break
@@ -232,7 +232,7 @@ def getEulerianCircuit():
     return path, sortedConnections, cMatrixAttempts, eulerianAttempts
 
 
-#%% MAIN PROGRAM
+## MAIN PROGRAM
 def main():
     
     path, sortedConnections, cMatrixAttempts, eulerianAttempts  = getEulerianCircuit()
@@ -245,15 +245,4 @@ def main():
     print "Number of invalid routes: ", intersec.invalid_route_count(path,invalidRoutes,range(60))   
     
 if __name__ == "__main__":
-    
     main()
-
-
-"""
-(1): Nahi izatekotan ibilbide errepikatuk ere gorde
-
-- Sortzen ahal da zerbait barkua depende non dagon handik hasteko ibilbidia, o sea, 
-2. balizan baldin badago ta ibilbidia [1,2,3] bada aldatzeko [2,3,1]-era.
-
-- Normalin hasiera puntua da bajua, tuplak (min,max) ordenatuk daudelako
-"""
